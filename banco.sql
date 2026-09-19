@@ -163,7 +163,7 @@ ALTER TABLE tb_departamento ADD(qtd_func INT);
 SELECT * FROM tb_departamento;
 
 -- ============================================================================
-
+-- a4 - 14/09/2026
 create table tb_disciplinas(
 id_disc_pk int primary key auto_increment,
 nome varchar(60),
@@ -207,8 +207,71 @@ insert into tb_alunos(nome, curso) values
 
 create table tb_alnDisc(
 id_aluno int,
-id_discplinas int
+id_disciplinas int,
 primary key(id_aluno, id_disciplinas),
 foreign key(id_aluno) references tb_alunos(id_aln_pk),
-foreign key(id_disciplinas) references tb_disciplinas(id_disc_pk),
+foreign key(id_disciplinas) references tb_disciplinas(id_disc_pk)
 );
+
+insert into tb_alnDisc(id_aluno, id_disciplinas) 
+values
+(1, 1),
+(1, 2),
+(2, 3),
+(3, 4),
+(4, 5),
+(5, 6),
+(6, 7);
+
+select id_aluno, id_disciplinas from tb_alnDisc
+inner join tb_alunos
+on tb_alnDisc.id_aluno = tb_alunos.id_aln_pk
+inner join tb_disciplinas
+on tb_alnDisc.id_disciplinas = tb_disciplinas.id_disc_pk;
+
+create table tb_professor(
+id_aln_pf int primary key auto_increment,
+nome varchar(50) not null,
+curso varchar(50),
+disciplina varchar(50)
+);
+
+alter table tb_professor
+rename column id_aln_pf to id_prf_pk;
+
+insert into tb_professor(nome, curso, disciplina) values 
+("Vladmir", "ADS", "BD"),
+("Alexandra", "ADS", "Front End"),
+("Ivan", "CCP", "JAVA"),
+("Nicolau", "Matemática", "Cálculo I"),
+("Alexandre", "Física", "Cálculo II"),
+("Catarina", "Engenharia Civil", "Álgebra Linear"),
+("Anna", "Engenharia de Software", "Redes");
+
+select * from tb_professor;
+
+alter table tb_alnDisc
+rename to tb_chaves;
+
+select * from tb_chaves;
+
+alter table tb_chaves
+add id_prof int;
+
+
+
+alter table tb_chaves
+add primary key(id_prof),
+add foreign key(id_prof) references tb_professor(id_prf_pk);
+
+insert into tb_chaves(id_prof, id_disciplinas)
+values
+(1, 1),
+(2, 1),
+(3, 3),
+(4, 4),
+(5, 5),
+(6, 6),
+(7, 7);
+
+select * from tb_chaves;
