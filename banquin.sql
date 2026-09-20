@@ -156,115 +156,113 @@ alter table tb_departamento add(qtd_func int);
 select * from tb_departamento;
 
 -- ============================================================================
+show tables;
+select * from tb_departamento;
+select * from tb_funcionarios;
+
+alter table tb_departamento change nome nome_dep varchar(50);
+-- ============================================================================
 -- a4 - 14/09/2026
 create table tb_disciplinas(
 id_disc_pk int primary key auto_increment,
-nome varchar(60),
-cursos varchar(60)
+nome_disc varchar(50)
 );
 
-insert into tb_disciplinas(nome, cursos) values 
-("BD", "ADS"),
-("Front End", "ADS"),
-("JAVA", "CCP"),
-("Cálculo I", "Matemática"),
-("Cálculo II", "Matemática"),
-("Álgebra Linear", "Matemática"),
-("Redes","Engenharia de Software");
+insert into tb_disciplinas(nome_disc) values 
+("Cálculo I"),
+("Cálculo II"),
+("Álgebra Linear"),
+("Física Quântica "),
+("Termodinâmica"),
+("Mecânica"),
+("Eletrostática");
 
--- select * from tb_disciplinas;
+select * from tb_disciplinas;
+
+create table tb_cursos(
+id_crs_pk int primary key auto_increment,
+nome_curso varchar(50)
+);
+
+insert into tb_cursos(nome_curso) values
+("Matemática"),
+("Física");
+
+select * from tb_cursos;
 
 create table tb_alunos(
 id_aln_pk int primary key auto_increment,
-nome varchar(50) not null,
-curso varchar(50)
+nome varchar(50),
+id_curso int,
+constraint foreign key(id_curso) references tb_cursos(id_crs_pk)
 );
 
-/*update tb_disciplinas
-set cursos = "Física"
-where id_disc_pk = 5;
+insert into tb_alunos(nome, id_curso) values 
+("Guilherme", 1),
+("Adelaide", 2),
+("Nelson", 1),
+("Rosa", 2),
+("João", 1),
+("Gilberto", 1),
+("Ana", 2),
+("Maria", 2);
 
-update tb_disciplinas
-set cursos = "Engenharia Civil"
-where id_disc_pk = 6;*/
-
-insert into tb_alunos(nome, curso) values 
-("João", "ADS"),
-("Maria", "CCP"),
-("Fernanda", "Matemática"),
-("Clarice", "Física"),
-("Ronaldo", "Engenharia Civil"),
-("Vitor", "Engenharia de Software");
-
--- select * from tb_alunos;
-
-create table tb_alnDisc(
-id_aluno int,
-id_disciplinas int,
-primary key(id_aluno, id_disciplinas),
-foreign key(id_aluno) references tb_alunos(id_aln_pk),
-foreign key(id_disciplinas) references tb_disciplinas(id_disc_pk)
-);
-
-insert into tb_alnDisc(id_aluno, id_disciplinas) 
-values
-(1, 1),
-(1, 2),
-(2, 3),
-(3, 4),
-(4, 5),
-(5, 6),
-(6, 7);
-
-select id_aluno, id_disciplinas from tb_alnDisc
-inner join tb_alunos
-on tb_alnDisc.id_aluno = tb_alunos.id_aln_pk
-inner join tb_disciplinas
-on tb_alnDisc.id_disciplinas = tb_disciplinas.id_disc_pk;
+select * from tb_alunos;
 
 create table tb_professor(
-id_aln_pf int primary key auto_increment,
-nome varchar(50) not null,
-curso varchar(50),
-disciplina varchar(50)
+id_prof_pk int primary key auto_increment,
+nome varchar(50),
+disciplina int,
+constraint foreign key(disciplina) references tb_disciplinas(id_disc_pk)
 );
 
-alter table tb_professor
-rename column id_aln_pf to id_prf_pk;
-
-insert into tb_professor(nome, curso, disciplina) values 
-("Vladmir", "ADS", "BD"),
-("Alexandra", "ADS", "Front End"),
-("Ivan", "CCP", "JAVA"),
-("Nicolau", "Matemática", "Cálculo I"),
-("Alexandre", "Física", "Cálculo II"),
-("Catarina", "Engenharia Civil", "Álgebra Linear"),
-("Anna", "Engenharia de Software", "Redes");
+insert into tb_professor(nome, disciplina) values 
+("Feyman", 7),
+("Daria", 5),
+("Carlos", 3),
+("Brenda", 1),
+("Ariel", 2),
+("Jasmine", 4),
+("Frida", 6);
 
 select * from tb_professor;
 
-alter table tb_alnDisc
+create table chaves(
+id_chv_pk int primary key auto_increment,
+id_aluno int,
+id_prof int,
+id_curso int,
+id_disc int,
+constraint foreign key(id_aluno) references tb_alunos(id_aln_pk),
+constraint foreign key(id_prof) references tb_professor(id_prof_pk),
+constraint foreign key(id_curso) references tb_cursos(id_crs_pk),
+constraint foreign key(id_disc) references tb_disciplinas(id_disc_pk)
+);
+
+alter table chaves
 rename to tb_chaves;
 
+alter table tb_alunos
+change id_curso curso int;
+
+select * from tb_alunos;
+select * from tb_professor;
+select * from tb_cursos;
+select * from tb_disciplinas;
 select * from tb_chaves;
 
-alter table tb_chaves
-add id_prof int;
+select id_aluno, id_prof, id_curso, id_disc from tb_chaves
+inner join tb_alunos on tb_chaves.id_aluno = tb_alunos.id_aln_pk
+inner join tb_professor on tb_chaves.id_prof = tb_professor.id_prof_pk
+inner join tb_cursos on tb_chaves.id_curso = tb_cursos.id_crs_pk
+inner join tb_disciplinas on tb_chaves.id_disc = tb_disciplinas.id_disc_pk;
 
-
-
-alter table tb_chaves
-add primary key(id_prof),
-add foreign key(id_prof) references tb_professor(id_prf_pk);
-
-insert into tb_chaves(id_prof, id_disciplinas)
-values
-(1, 1),
-(2, 1),
-(3, 3),
-(4, 4),
-(5, 5),
-(6, 6),
-(7, 7);
-
-select * from tb_chaves;
+insert into tb_chaves(id_aluno, id_prof, id_curso, id_disc) values
+(1, 4, 1, 1),
+(2, 5, 2, 2),
+(3, 3, 1,  3),
+(4, 6, 2, 4),
+(5, 2, 1, 5),
+(6, 7, 1, 6),
+(7, 1, 2, 7),
+(8, 4, 2, 1);
