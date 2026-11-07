@@ -1,4 +1,4 @@
--- dotpad/db_af_2026
+-- https://dontpad.com/db_af_2026
 create database bd_banquinho;
 use bd_banquinho;
 
@@ -157,7 +157,7 @@ select * from tb_departamento;
 
 -- ============================================================================
 show tables;
-select * from tb_departamento;
+select * from tb_departamentotb_departamentotb_departamento;
 select * from tb_funcionarios;
 
 alter table tb_departamento change nome nome_dep varchar(50);
@@ -266,3 +266,66 @@ insert into tb_chaves(id_aluno, id_prof, id_curso, id_disc) values
 (6, 7, 1, 6),
 (7, 1, 2, 7),
 (8, 4, 2, 1);
+
+-- ============================================================================
+-- 06/11/2026
+SELECT * FROM tb_departamento;
+SELECT * FROM tb_funcionarios;
+INSERT INTO tb_funcionarios(nome, salario, idade) VALUES ('Gustavo', 251.36, 18),
+														 ('Zé da Adega', 315.96, 71);
+INSERT INTO tb_departamento(nome) VALUES('Manutenção'),
+										('Juridico');
+                                        
+SELECT tb_funcionarios.nome, tb_departamento.nome FROM tb_funcionarios
+INNER JOIN tb_departamento ON tb_departamento.id_dep_pk = tb_funcionarios.dep;
+
+SELECT tb_funcionarios.nome, tb_departamento.nome FROM tb_departamento
+INNER JOIN tb_funcionarios ON tb_departamento.id_dep_pk = tb_funcionarios.dep;
+
+SELECT tb_funcionarios.nome, tb_departamento.nome FROM tb_funcionarios
+LEFT JOIN tb_departamento ON tb_departamento.id_dep_pk = tb_funcionarios.dep;
+
+SELECT tb_funcionarios.nome, tb_departamento.nome FROM tb_departamento
+LEFT JOIN tb_funcionarios ON tb_departamento.id_dep_pk = tb_funcionarios.dep;
+
+SELECT * FROM tb_departamento FULL JOIN tb_funcionarios;
+
+SELECT f.nome, f.salario, d.nome AS departamento FROM tb_funcionarios f INNER JOIN
+tb_departamento d ON f.dep = d.id_dep_pk WHERE d.nome = 'T.I.';
+
+SELECT f.nome, f.salario, d.nome AS departamento FROM tb_funcionarios f INNER JOIN
+tb_departamento d ON d.id_dep_pk = f.dep WHERE d.nome = 'T.I.' AND f.salario <
+(SELECT AVG(salario) FROM tb_funcionarios);
+
+SELECT f.nome, f.salario, d.nome AS departamento FROM tb_funcionarios f INNER JOIN
+tb_departamento d ON d.id_dep_pk = f.dep WHERE d.nome = 'T.I.' AND f.salario <
+(SELECT AVG(salario) FROM tb_funcionarios WHERE d.nome = 'T.I.' );
+
+SELECT d.nome AS departamento, AVG(f.salario) AS 
+media_salarial FROM tb_departamento d JOIN tb_funcionarios f
+ ON d.id_dep_pk = f.dep GROUP BY d.nome;
+
+SELECT d.nome AS departamento, AVG(f.salario) AS media_salarial 
+FROM tb_departamento d JOIN tb_funcionarios f ON f.dep = d.id_dep_pk GROUP BY 
+d.id_dep_pk, d.nome HAVING AVG(f.salario) < (SELECT AVG(salario) FROM tb_funcionarios);
+
+select * from tb_funcionarios;
+rollback;
+
+-- update tb_funcionarios set salario = salario * 1.50 where nome = 'Doralice';
+
+select nome, salario, idade from tb_funcionarios where idade = 18 or idade = 71;
+select nome, salario, idade from tb_funcionarios where idade in (18, 71);
+select nome, salario, idade from tb_funcionarios where idade not in (18, 71);
+
+select nome, salario, idade from tb_funcionarios 
+where salario > all(select salario from tb_funcionarios where dep = 1);
+
+select nome, salario, idade from tb_funcionarios 
+where salario > any(select salario from tb_funcionarios where dep = 1);
+
+select nome, salario, idade from tb_funcionarios where idade > 10 and idade < 40;
+select nome, salario, idade from tb_funcionarios where idade between 10 and 40;
+select nome, salario, idade from tb_funcionarios where idade between 10 and 40;
+
+select nome, dep from tb_funcionarios where dep in(select id_dep_pk from tb_departamento where nome in('T.I.', 'Jurídico')) order by 1;
